@@ -1,46 +1,65 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState }from 'react';
 import { useNavigate } from 'react-router-dom';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import ErrorMessage from '../components/ErrorMessage';
 import Metadata from '../components/Metadata';
-import API_URLS from '../apiConfig';
+import PostContext from '../context/PostContext';
 import metadataConfig from '../metadataConfig';
 
 const Login = () => {
+    const { loginUser } = useContext(PostContext);
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
-  
+
     const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.post(API_URLS.LOGIN, { email, password });
-        if (response.data.success) {
-          localStorage.setItem('userId', response.data.userId);
-          navigate('/');
-        } else {
-          setError(response.data.message);
+        e.preventDefault();
+        try {
+            await loginUser(email, password);
+            navigate('/');
+        } catch (error) {
+            setError('Login failed');
         }
-      } catch (error) {
-        setError('An error occurred. Please try again.');
-      }
     };
-  
+
     return (
-      <div>
-        <Metadata {...metadataConfig.login} />
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <Input label="Email:" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input label="Password:" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <ErrorMessage message={error} />
-          <Button type="submit">Login</Button>
-        </form>
-      </div>
+        <Container component="main" maxWidth="xs">
+            <Metadata {...metadataConfig.login} />
+            <Box mt={8}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Login
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        label="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        fullWidth
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <TextField
+                        label="Password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        fullWidth
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <ErrorMessage message={error} />
+                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                        Login
+                    </Button>
+                </form>
+            </Box>
+        </Container>
     );
-  };
+};
 
 export default Login;

@@ -1,7 +1,12 @@
 import React, {createContext, useReducer} from 'react'
-import { getPost, updatePost, deletePost, createPost, detailPost } from '../services/api';
+import { getPost, updatePost, deletePost, createPost, getPosts, register, login, logout } from '../services/api';
 
 const PostContext = createContext();
+
+const initialState = {
+    posts: [],
+    initialLoading: true,
+};
 
 const postReducer = (state, action) => {
     switch (action.type) {
@@ -15,21 +20,30 @@ const postReducer = (state, action) => {
             return { ...state, posts: state.posts.map(post => post.id === action.payload.id ? action.payload : post)};
         case 'DELETE_POST':
             return { ...state, posts: state.posts.filter(post => post.id !== action.payload)};
+        case 'REGISTER_USER':
+            return { ...state, posts: [...state.posts, action.payload] };
+        case 'LOGIN_USER':
+            return { ...state, posts: [...state.posts, action.payload] };
+        case 'LOGOUT_USER':
+            return { ...state, posts: action.payload };
+        case 'RESET_INITIAL_LOADING':
+            return { ...state, initialLoading: true };
         default:
             return state;
     }
 }
 
 export const PostProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(postReducer, {posts:[]});
+    //const [state, dispatch] = useReducer(postReducer, {posts:[]});
+    const [state, dispatch] = useReducer(postReducer, initialState);
 
     const fetchPosts = async () => {
-        const response = await getPost();
+        const response = await getPosts();
         dispatch({ type: 'SET_POSTS', payload: response.data });
     };
 
     const detailPost = async (id) => {
-        const response = await detailPost(id);
+        const response = await getPost(id);
         dispatch({ type: 'DETAIL_POSTS', payload: response.data });
     };
 
@@ -48,8 +62,34 @@ export const PostProvider = ({ children }) => {
         dispatch({ type: 'DELETE_POST', payload: response.data });
     };
 
+    const registerUser = async (name, email, password) => {
+        const response = await register(name, email, password);
+        dispatch({ type: 'REGISTER_USER', payload: response.data });
+    };
+
+    const loginUser = async (email, password) => {
+        const response = await login(email, password);
+        if (response && response.data && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            dispatch({ type: 'LOGIN_USER', payload: response.data });
+        } else {
+            throw new Error('Invalid response from server');
+        }
+    };
+
+    const logoutUser = async () => {
+        const token = localStorage.getItem('token');
+        const response = await logout(token);
+        localStorage.removeItem('token');
+        dispatch({ type: 'LOGOUT_USER' });
+    };
+
+    const resetInitialLoading = () => {
+        dispatch({ type: 'RESET_INITIAL_LOADING' });
+    };
+
     return (
-        <PostContext.Provider value={{state, fetchPosts, addPost, editPost, removePost, detailPost}}>
+        <PostContext.Provider value={{state, fetchPosts, addPost, editPost, removePost, detailPost, registerUser, loginUser, logoutUser, resetInitialLoading}}>
             {children}
         </PostContext.Provider>
     );

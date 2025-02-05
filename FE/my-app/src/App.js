@@ -5,20 +5,23 @@ import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import PostDetail from './pages/PostDetail';
 import Login from './pages/Login';
-import SecureRoute from './components/SecureRoute';
+import Register from './pages/Register';
 import { PostProvider } from './context/PostContext';
-
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <PostProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/create" element={<CreatePost />} />
-          <Route path="/edit:id" element={<SecureRoute><EditPost /></SecureRoute>} />
-          <Route path="/post:id" element={<PostDetail />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Homepage />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/create" element={<CreatePost />} />
+            <Route path="/edit/:id" element={<EditPost />} />
+          </Route>
+          <Route path="/post/:id" element={<PostDetail />} />
         </Routes>
       </Router>
     </PostProvider>

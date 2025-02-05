@@ -4,10 +4,21 @@ import './index.css';
 import App from './App';
 //import reportWebVitals from './reportWebVitals';
 
+import { Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+export const Root = styled(Box)(({ theme }) => ({
+    backgroundColor: '#f5f5f5',
+    minHeight: '100vh',
+    padding: theme.spacing(4),
+}));
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Root>
+      <App />
+    </Root>
   </React.StrictMode>
 );
 

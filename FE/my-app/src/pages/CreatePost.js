@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Divider, Card, CardContent } from '@mui/material';
 import PostContext from '../context/PostContext';
 import PostForm from '../components/PostForm';
 import Metadata from '../components/Metadata';
@@ -15,11 +16,18 @@ const CreatePost = () => {
     };
 
     return (
-        <div>
+        <Container component="main" maxWidth="sm">
             <Metadata {...metadataConfig.createPost} />
-            <h2>Create Post</h2>
-            <PostForm onSubmit={handleSubmit} buttonText="Create Post" />
-        </div>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        Create Post
+                    </Typography>
+                    <Divider />
+                    <PostForm onSubmit={handleSubmit} buttonText="Create Post" />
+                </CardContent>
+            </Card>
+        </Container>
     );
 };
 

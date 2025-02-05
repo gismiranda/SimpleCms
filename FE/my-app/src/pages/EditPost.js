@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Typography, Card, CardContent, Divider } from '@mui/material';
 import PostContext from '../context/PostContext';
 import PostForm from '../components/PostForm';
 import Metadata from '../components/Metadata';
@@ -13,9 +14,9 @@ const EditPost = () => {
 
   useEffect(() => {
     if (!post) {
-        navigate('/');
-      }
-    }, [post, navigate]);
+      navigate('/');
+    }
+  }, [post, navigate]);
 
   const handleSubmit = async (updatePost) => {
     await editPost(id, updatePost);
@@ -23,11 +24,18 @@ const EditPost = () => {
   };
 
   return (
-    <div>
+    <Container component="main" maxWidth="sm">
       <Metadata {...metadataConfig.editPost} />
-      <h2>Edit Post</h2>
-      {post && <PostForm initialData={post} onSubmit={handleSubmit} buttonText="Update Post" />}
-    </div>
+      <Card>
+        <CardContent>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Edit Post
+          </Typography>
+          <Divider />
+          {post && <PostForm initialData={post} onSubmit={handleSubmit} buttonText="Update Post" />}
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
